@@ -20,7 +20,7 @@ default_args = {
     'retry_delay' : timedelta(minutes=5)
 }
 
-def get_postgres_data(tempfile):
+def get_postgres_data():
     request = "SELECT * FROM blocks LIMIT 10" #double check how to write this
     pg_hook = PostgresHook(postgres_conn_id="postgres", schema="postgres") #made this connection in Airflow UI
     connection = pg_hook.get_conn() #gets the connection from postgres
@@ -31,16 +31,15 @@ def get_postgres_data(tempfile):
     cursor.execute(request) #executes request
     sources = cursor.fetchall() #fetches all the data from the executed request
     df = pd.DataFrame(sources)
-    df.to_csv('tempfile')
+    df.to_csv('tempfile.csv')
 
 def upload_data_to_S3(file_name, bucket_name):
     hook = airflow.hooks.S3_hook.S3_hook('s3_conn')
     hook.load_file(file_name, bucket_name)
 
 def run_export_to_s3():
-    tempfile = TemporaryFile()
-    get_postgres_data(tempfile)
-    upload_data_to_S3(tempfile, "icon-redshift-dump-dev")
+    get_postgres_data()
+    upload_data_to_S3("tempfile.csv", "icon-redshift-dump-dev")
 
 
 with DAG('load_rds_s3', default_args=default_args, schedule_interval = "@once", catchup=False) as dag:
