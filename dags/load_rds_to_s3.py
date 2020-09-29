@@ -31,15 +31,19 @@ def get_postgres_data():
     cursor.execute(request) #executes request
     sources = cursor.fetchall() #fetches all the data from the executed request
     df = pd.DataFrame(sources)
+    print(sources)
     df.to_csv('tempfile.csv')
 
 def upload_data_to_S3(file_name, bucket_name):
     hook = airflow.hooks.S3_hook.S3_hook('s3_conn')
     hook.load_file(file_name, bucket_name)
 
+
+
 def run_export_to_s3():
     get_postgres_data()
     upload_data_to_S3("tempfile.csv", "icon-redshift-dump-dev")
+    #delete tempfile.csv
 
 
 with DAG('load_rds_s3', default_args=default_args, schedule_interval = "@once", catchup=False) as dag:
