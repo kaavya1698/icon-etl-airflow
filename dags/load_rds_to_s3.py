@@ -32,7 +32,7 @@ def get_postgres_data():
     sources = cursor.fetchall() #fetches all the data from the executed request
     df = pd.DataFrame(sources)
     print(sources)
-    df.to_csv('tempfile.csv')
+    df.to_csv("~/tempfile.csv")
 
 def upload_data_to_S3(file_name, bucket_name):
     hook = airflow.hooks.S3_hook.S3_hook('s3_conn')
@@ -42,7 +42,7 @@ def upload_data_to_S3(file_name, bucket_name):
 
 def run_export_to_s3():
     get_postgres_data()
-    upload_data_to_S3("tempfile.csv", "icon-redshift-dump-dev")
+    upload_data_to_S3(tempfile.csv, "icon-redshift-dump-dev")
     #delete tempfile.csv
 
 
