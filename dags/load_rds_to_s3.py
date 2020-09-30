@@ -37,7 +37,7 @@ def get_postgres_data():
 
 def upload_data_to_S3(filename, key, bucket_name):
     hook = S3Hook('s3_conn')
-    hook.load_file(filename=file_name, key=k, bucket_name=bucket)
+    hook.load_file(filename=filename, key=k, bucket_name=bucket)
 
 
 def run_export_to_s3():
