@@ -32,7 +32,7 @@ def get_postgres_data():
     sources = cursor.fetchall() #fetches all the data from the executed request
     df = pd.DataFrame(sources)
     print(df)
-    df.to_csv('test.csv')
+    df.to_csv('/home/ubuntu/test.csv')
 
 
 def upload_data_to_S3(filename, key, bucket_name):
@@ -51,7 +51,7 @@ with DAG('load_rds_s3', default_args=default_args, schedule_interval = "@once", 
 
     start_task = DummyOperator(task_id = 'start_task')
     load_rds_task = PythonOperator(task_id='load_rds', python_callable = get_postgres_data)
-    upload_to_s3_task = PythonOperator(task_id='upload_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': 'test.csv', 'key':'my_s3_file.csv', 'bucket_name': 'icon-redshift-dump-dev'})
+    upload_to_s3_task = PythonOperator(task_id='upload_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/test.csv', 'key':'my_s3_file.csv', 'bucket_name': 'icon-redshift-dump-dev'})
     start_task >> load_rds_task >> upload_to_s3_task
 
 
