@@ -6,7 +6,7 @@ from airflow.hooks.S3_hook import S3Hook
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
 
-from tempfile import TemporaryFile
+from tempfile import TemporaryDirectory
 
 import pandas as pd
 import os  
@@ -21,7 +21,7 @@ default_args = {
     'retry_delay' : timedelta(minutes=5)
 }
 
-def get_postgres_data(tempfile):
+def get_postgres_data(tempdir):
     request = "SELECT * FROM blocks LIMIT 25" #double check how to write this
     pg_hook = PostgresHook(postgres_conn_id="postgres", schema="postgres") #made this connection in Airflow UI
     connection = pg_hook.get_conn() #gets the connection from postgres
@@ -33,7 +33,7 @@ def get_postgres_data(tempfile):
     sources = cursor.fetchall() #fetches all the data from the executed request
     results = pd.DataFrame(sources)
     print(results)
-    results.to_csv(tempfile)
+    results.to_csv('/result_dir/tempfile.csv')
 
 
 def upload_data_to_S3(filename, key, bucket_name):
@@ -42,10 +42,9 @@ def upload_data_to_S3(filename, key, bucket_name):
 
 
 def run_export_to_s3():
-    result_file = TemporaryFile()
-    os.chmod(result_file, stat.S_IRGRP | stat.S_IWGRP | stat.S_IXGRP)
-    get_postgres_data('result_file')
-    upload_data_to_S3('result_file', 'my_s3_file_v2.csv', 'icon-redshift-dump-dev')
+    result_dir = TemporaryDirectory()
+    get_postgres_data('result_dir')
+    upload_data_to_S3('/result_dir/tempfile.csv', 'my_s3_file_v2.csv', 'icon-redshift-dump-dev')
     #delete tempfile.csv
 
 
@@ -57,9 +56,3 @@ with DAG('load_rds_s3_v2', default_args=default_args, schedule_interval = "@once
     #upload_to_s3_task = PythonOperator(task_id='upload_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/test.csv', 'key':'my_s3_file.csv', 'bucket_name': 'icon-redshift-dump-dev'})
     run_export_to_s3 = PythonOperator(task_id = 'run_export_to_s3', python_callable = run_export_to_s3)
     start_task >> run_export_to_s3
-
-
-
-
-
-
