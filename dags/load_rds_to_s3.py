@@ -42,7 +42,7 @@ def upload_data_to_S3(file_name, bucket_name):
 
 def run_export_to_s3():
     get_postgres_data()
-    upload_data_to_S3(tempfile.csv, "icon-redshift-dump-dev")
+    upload_data_to_S3("~/tempfile.csv", "icon-redshift-dump-dev")
     #delete tempfile.csv
 
 
