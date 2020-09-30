@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.hooks.postgres_hook import PostgresHook
-import airflow.hooks.S3_hook
+from airflow.hooks.S3_hook import S3Hook
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
 
@@ -21,7 +21,7 @@ default_args = {
 }
 
 def get_postgres_data():
-    request = "SELECT * FROM blocks LIMIT 10" #double check how to write this
+    request = "SELECT * FROM blocks LIMIT 25" #double check how to write this
     pg_hook = PostgresHook(postgres_conn_id="postgres", schema="postgres") #made this connection in Airflow UI
     connection = pg_hook.get_conn() #gets the connection from postgres
     #result = connection.get_pandas_df(request)
