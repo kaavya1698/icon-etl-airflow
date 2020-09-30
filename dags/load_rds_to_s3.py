@@ -34,10 +34,10 @@ def get_postgres_data():
     print(sources)
     df.to_csv("~/tempfile.csv")
 
+
 def upload_data_to_S3(file_name, bucket_name):
     hook = airflow.hooks.S3_hook.S3hook('s3_conn')
     hook.load_file(file_name, bucket_name)
-
 
 
 def run_export_to_s3():
@@ -49,5 +49,12 @@ def run_export_to_s3():
 with DAG('load_rds_s3', default_args=default_args, schedule_interval = "@once", catchup=False) as dag:
 
     start_task = DummyOperator(task_id = 'start_task')
-    hook_task = PythonOperator(task_id='load_rds_s3', python_callable = run_export_to_s3)
-    start_task >> hook_task
+    load_rds_task = PythonOperator(task_id='load_rds', python_callable = get_postgres_data)
+    upload_to_s3_task = PythonOperator(task_id='upload_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '~/tempfile.csv','bucket_name': 'icon-redshift-dump-dev'})
+    start_task >> load_rds_task >> upload_to_s3_task
+
+
+
+
+
+
