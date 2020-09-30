@@ -35,7 +35,7 @@ def get_postgres_data():
     df.to_csv("~/tempfile.csv")
 
 def upload_data_to_S3(file_name, bucket_name):
-    hook = airflow.hooks.S3_hook.S3_hook('s3_conn')
+    hook = airflow.hooks.S3_hook.S3hook('s3_conn')
     hook.load_file(file_name, bucket_name)
 
 
