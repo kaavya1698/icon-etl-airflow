@@ -47,7 +47,7 @@ def run_export_to_s3():
     #delete tempfile.csv
 
 
-with DAG('load_rds_s3', default_args=default_args, schedule_interval = "@once", catchup=False) as dag:
+with DAG('load_rds_s3_v2', default_args=default_args, schedule_interval = "@once", catchup=False) as dag:
 
 
     start_task = DummyOperator(task_id = 'start_task')
