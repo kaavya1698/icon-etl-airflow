@@ -35,7 +35,7 @@ def get_postgres_data():
     df.to_csv("~/tempfile.csv")
 
 
-def upload_data_to_S3(file_name, bucket_name):
+def upload_data_to_S3(filename, key, bucket_name):
     hook = S3Hook('s3_conn')
     hook.load_file(filename=file_name, key=k, bucket_name=bucket)
 
@@ -48,12 +48,10 @@ def run_export_to_s3():
 
 with DAG('load_rds_s3', default_args=default_args, schedule_interval = "@once", catchup=False) as dag:
 
-    bucket= 'icon-redshift-dump-dev'
-    filename = '~/tempfile.csv'
 
     start_task = DummyOperator(task_id = 'start_task')
     load_rds_task = PythonOperator(task_id='load_rds', python_callable = get_postgres_data)
-    upload_to_s3_task = PythonOperator(task_id='upload_to_S3', python_callable = upload_data_to_S3(bucket, filename))
+    upload_to_s3_task = PythonOperator(task_id='upload_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '~/tempfile.csv', 'key':'my_s3_file.csv', 'bucket_name': 'icon-redshift-dump-dev'}
     start_task >> load_rds_task >> upload_to_s3_task
 
 
