@@ -36,7 +36,7 @@ def get_postgres_data():
 
 
 def upload_data_to_S3(file_name, bucket_name):
-    hook = airflow.hooks.S3_hook.S3hook('s3_conn')
+    hook = S3Hook('s3_conn')
     hook.load_file(file_name, bucket_name)
 
 
