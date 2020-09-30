@@ -43,7 +43,7 @@ def upload_data_to_S3(filename, key, bucket_name):
 
 def run_export_to_s3():
     result_file = TemporaryFile()
-    os.chmod(result_file, airflow)
+    os.chmod(result_file, stat.S_IRGRP | stat.S_IWGRP | stat.S_IXGRP)
     get_postgres_data('result_file')
     upload_data_to_S3('result_file', 'my_s3_file_v2.csv', 'icon-redshift-dump-dev')
     #delete tempfile.csv
