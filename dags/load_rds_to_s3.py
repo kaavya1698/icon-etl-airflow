@@ -1,21 +1,20 @@
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
+from tempfile import TemporaryFile
+import pandas as pd 
 
 from airflow import DAG
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.hooks.S3_hook import S3Hook
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
+from airflow.models import Variable
 
-from tempfile import TemporaryFile
-
-import pandas as pd 
-
-
+start_date = Variable.get("rds_s3_start_date")
 
 default_args = {
     'owner' : 'airflow',
     'depend_on_past' : False,
-    'start_date' : datetime(2020, 9, 28, 00, 00, 00),
+    'start_date' : start_date,
     'retries': 5,
     'retry_delay' : timedelta(minutes=5)
 }
@@ -24,15 +23,12 @@ def get_postgres_data():
     request = "SELECT *, timestamp 'epoch' + CAST(timestamp AS BIGINT)/1000000 * interval '1 second' AS date_timestamp FROM blocks LIMIT 25" #double check how to write this
     pg_hook = PostgresHook(postgres_conn_id="postgres", schema="postgres") #made this connection in Airflow UI
     connection = pg_hook.get_conn() #gets the connection from postgres
-    #result = connection.get_pandas_df(request)
-    #result.to_csv(tempfile)
-
     cursor = connection.cursor() #cursor to postgres database
     cursor.execute(request) #executes request
     sources = cursor.fetchall() #fetches all the data from the executed request
-    results = pd.DataFrame(sources)
+    results = pd.DataFrame(sources) #writes to datafram
     print(results)
-    results.to_csv('/home/ubuntu/s3_dump/test.csv')
+    results.to_csv('/home/ubuntu/s3_dump/test.csv') #printing to dir owned by airflow. Need to change this to temp dir but can be done later
 
 
 

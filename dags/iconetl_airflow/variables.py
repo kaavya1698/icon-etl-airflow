@@ -133,3 +133,17 @@ def parse_int(val):
     if val is None:
         return None
     return int(val)
+
+#writing vars for rds to s3------------------------------------------------------------------------------
+
+def read_load_rds_s3_vars(var_prefix, **kwargs):
+    rds_s3_start_date = read_var('export_start_date', var_prefix, True, **kwargs)
+    rds_s3_start_date = datetime.strptime(export_start_date, '%Y-%m-%d')
+
+    vars = {
+
+        'rds_s3_start_date': rds_s3_start_date,
+
+    }
+
+    return vars
