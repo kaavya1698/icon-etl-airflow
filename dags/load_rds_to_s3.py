@@ -44,12 +44,12 @@ def run_export_to_s3():
     #delete tempfile.csv
 
 
-with DAG('load_rds_s3', default_args=default_args, schedule_interval = '0 8 * * *', catchup=False) as dag:
+with DAG('load_rds_s3', default_args=default_args, schedule_interval = '0 8 * * *', catchup=True) as dag:
 
 
     start_task = DummyOperator(task_id = 'start_task')
     load_rds_task = PythonOperator(task_id='load_rds', python_callable = get_postgres_data)
-    upload_to_s3_task = PythonOperator(task_id='upload_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/test.csv', 'key':'rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
+    upload_to_s3_task = PythonOperator(task_id='upload_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/test.csv', 'key':'_block_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
     start_task >> load_rds_task >> upload_to_s3_task
 
 
