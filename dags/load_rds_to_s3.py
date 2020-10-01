@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 from airflow import DAG
 from airflow.hooks.postgres_hook import PostgresHook
@@ -21,7 +21,7 @@ default_args = {
 }
 
 def get_postgres_data():
-    request = "SELECT * FROM blocks LIMIT 25" #double check how to write this
+    request = "SELECT *, timestamp 'epoch' + CAST(timestamp AS BIGINT)/1000000 * interval '1 second' AS date_timestamp FROM blocks LIMIT 25" #double check how to write this
     pg_hook = PostgresHook(postgres_conn_id="postgres", schema="postgres") #made this connection in Airflow UI
     connection = pg_hook.get_conn() #gets the connection from postgres
     #result = connection.get_pandas_df(request)
@@ -52,7 +52,7 @@ with DAG('load_rds_s3', default_args=default_args, schedule_interval = '0 8 * * 
 
     start_task = DummyOperator(task_id = 'start_task')
     load_rds_task = PythonOperator(task_id='load_rds', python_callable = get_postgres_data)
-    upload_to_s3_task = PythonOperator(task_id='upload_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/test.csv', 'key':'my_s3_file.csv', 'bucket_name': 'icon-redshift-dump-dev'})
+    upload_to_s3_task = PythonOperator(task_id='upload_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/test.csv', 'key':date.today() + 'my_s3_file.csv', 'bucket_name': 'icon-redshift-dump-dev'})
     start_task >> load_rds_task >> upload_to_s3_task
 
 
