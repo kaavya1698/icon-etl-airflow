@@ -1,5 +1,4 @@
-import datetime as dt
- 
+from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.s3_to_redshift_operator import S3ToRedshiftTransfer
  
@@ -12,15 +11,16 @@ default_args = {
 }
  
 
-with DAG('upload_redshift', default_args=default_args, schedule_interval = '0 8 * * *', catchup=False) as dag:
-    start_task = DummyOperator(task_id = 'start_task')
+dag = DAG('upload_redshift', default_args=default_args, schedule_interval = '0 8 * * *', catchup=False)
 
-    transfer_redshift= S3ToRedshiftTransfer(
-      task_id='transfer_redshift',
-      schema='schema',
-      table= 'block_test',
-      s3_bucket='icon-redshift-dump-dev',
-      redshift_conn_id = 'icon-analytics-dev',
-      default_args= 'default_args'
+transfer_redshift= S3ToRedshiftTransfer(
+    task_id='transfer_redshift',
+    schema='schema',
+    table= 'block_test',
+    s3_bucket='icon-redshift-dump-dev',
+    redshift_conn_id = 'icon-analytics-dev',
+    default_args= 'default_args'
+    dag = dag
+    )
 
-      start_task>>transfer_redshift
+transfer_redshift
