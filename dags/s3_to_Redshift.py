@@ -22,4 +22,4 @@ transfer_redshift = S3ToRedshiftTransfer(
     dag = dag
     )
 
-transfer_redshif
+transfer_redshift
