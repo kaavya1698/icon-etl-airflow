@@ -11,13 +11,8 @@ default_args = {
     'retry_delay' : timedelta(minutes=5)
 }
  
-dag = DAG('redshift-etl',
-  default_args=default_args,
-  schedule_interval='@once'
-)
 
 with DAG('upload_redshift', default_args=default_args, schedule_interval = '0 8 * * *', catchup=False) as dag:
-
   start_task = DummyOperator(task_id = 'start_task')
   transfer_redshift= S3ToRedshiftTransfer(
     task_id='transfer_redshift',
@@ -27,4 +22,4 @@ with DAG('upload_redshift', default_args=default_args, schedule_interval = '0 8 
     redshift_conn_id = 'icon-analytics-dev',
     default_args= 'default_args'
 
-  start_task>>transfer_redshift
+    start_task>>transfer_redshift
