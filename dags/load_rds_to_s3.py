@@ -7,10 +7,10 @@ from airflow.hooks.postgres_hook import PostgresHook
 from airflow.hooks.S3_hook import S3Hook
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
+from airflow.operators import BashOperator
 from airflow.models import Variable
 
 start_date = Variable.get("rds_s3_start_date")
-execution_date = '{{ds}}'
 
 default_args = {
     'owner' : 'airflow',
@@ -21,6 +21,7 @@ default_args = {
 }
 
 def get_postgres_data():
+    get_date(ds, **kwargs)
     request = "SELECT * FROM (SELECT *,  timestamp 'epoch' + CAST(timestamp AS BIGINT)/1000000 * interval '1 second' AS date_timestamp FROM blocks) AS a WHERE a.date_timestamp :: date = date '%s'" #double check how to write this
     pg_hook = PostgresHook(postgres_conn_id="postgres", schema="postgres") #made this connection in Airflow UI
     connection = pg_hook.get_conn() #gets the connection from postgres
@@ -35,10 +36,11 @@ def get_postgres_data():
 
 
 def upload_data_to_S3(filename, key, bucket_name):
+    get_date(ds, **kwargs)s
     hook = S3Hook('s3_conn')
     hook.load_file(filename=filename, key=execution_date + key, bucket_name=bucket_name)
 
-def python_method(ds, **kwargs):
+def get_date(ds, **kwargs):
     Variable.set('execution_date', kwargs['execution_date'])
     return
 
