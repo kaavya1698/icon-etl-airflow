@@ -20,11 +20,11 @@ default_args = {
 }
 
 def get_postgres_data():
-    request = "SELECT *, timestamp 'epoch' + CAST(timestamp AS BIGINT)/1000000 * interval '1 second' AS date_timestamp FROM blocks WHERE date_timestamp :: date = '%s' LIMIT 25;"%(start_date) #double check how to write this
+    request = "SELECT * FROM (SELECT *,  timestamp 'epoch' + CAST(timestamp AS BIGINT)/1000000 * interval '1 second' AS date_timestamp FROM blocks) AS a WHERE a.date_timestamp :: date = date '%s' LIMIT 25" #double check how to write this
     pg_hook = PostgresHook(postgres_conn_id="postgres", schema="postgres") #made this connection in Airflow UI
     connection = pg_hook.get_conn() #gets the connection from postgres
     cursor = connection.cursor() #cursor to postgres database
-    cursor.execute(request) #executes request
+    cursor.execute(request %start_date) #executes request
     sources = cursor.fetchall() #fetches all the data from the executed request
     results = pd.DataFrame(sources) #writes to datafram
     print(start_date)
