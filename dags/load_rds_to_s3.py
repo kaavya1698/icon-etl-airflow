@@ -25,7 +25,7 @@ def get_postgres_data():
     pg_hook = PostgresHook(postgres_conn_id="postgres", schema="postgres") #made this connection in Airflow UI
     connection = pg_hook.get_conn() #gets the connection from postgres
     cursor = connection.cursor() #cursor to postgres database
-    cursor.execute(request %execution_date) #executes request
+    cursor.execute(request) #executes request
     sources = cursor.fetchall() #fetches all the data from the executed request
     results = pd.DataFrame(sources) #writes to datafram
     print(results)
