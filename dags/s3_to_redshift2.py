@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.s3_to_redshift_operator import S3ToRedshiftTransfer
+from airflow.operators.dummy_operator import DummyOperator
 
 default_args = {
 	'owner': 'airflow',
