@@ -37,7 +37,7 @@ def get_postgres_logs_data():
     connection_logs = pg_hook.get_conn() #gets the connection from postgres
     cursor_logs = connection.cursor() #cursor to postgres database
     cursor_logs.execute(request) #executes request
-    sources_logs = cursor.fetchall() #fetches all the data from the executed request
+    sources_logs = cursor_logs.fetchall() #fetches all the data from the executed request
     results_logs = pd.DataFrame(sources_logs) #writes to datafram
     results_logs.to_csv('/home/ubuntu/s3_dump/logs_dump.csv') #printing to dir owned by airflow. Need to change this to temp dir but can be done later
 
