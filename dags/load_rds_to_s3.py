@@ -34,13 +34,12 @@ def get_postgres_block_data():
 def get_postgres_logs_data():
     request = "SELECT * FROM logs" #double check how to write this
     pg_hook = PostgresHook(postgres_conn_id="postgres", schema="postgres") #made this connection in Airflow UI
-    connection = pg_hook.get_conn() #gets the connection from postgres
-    cursor = connection.cursor() #cursor to postgres database
-    cursor.execute(request) #executes request
-    sources = cursor.fetchall() #fetches all the data from the executed request
-    results = pd.DataFrame(sources) #writes to datafram
-    print(results)
-    results.to_csv('/home/ubuntu/s3_dump/logs_dump.csv') #printing to dir owned by airflow. Need to change this to temp dir but can be done later
+    connection_logs = pg_hook.get_conn() #gets the connection from postgres
+    cursor_logs = connection.cursor() #cursor to postgres database
+    cursor_logs.execute(request) #executes request
+    sources_logs = cursor.fetchall() #fetches all the data from the executed request
+    results_logs = pd.DataFrame(sources_logs) #writes to datafram
+    results_logs.to_csv('/home/ubuntu/s3_dump/logs_dump.csv') #printing to dir owned by airflow. Need to change this to temp dir but can be done later
 
 def upload_data_to_S3(filename, key, bucket_name):
     hook = S3Hook('s3_conn')
