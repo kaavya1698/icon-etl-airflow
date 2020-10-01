@@ -16,14 +16,15 @@ dag = DAG('redshift-etl',
   schedule_interval='@once'
 )
 
-transfer_redshift= S3ToRedshiftTransfer(
+with DAG('upload_redshift', default_args=default_args, schedule_interval = '0 8 * * *', catchup=False) as dag:
+
+  start_task = DummyOperator(task_id = 'start_task')
+  transfer_redshift= S3ToRedshiftTransfer(
     task_id='transfer_redshift',
     schema='schema',
     table= 'block_test',
     s3_bucket='icon-redshift-dump-dev',
     redshift_conn_id = 'icon-analytics-dev',
     default_args= 'default_args'
-    dag=dag
-)
 
-transfer_redshift
+  start_task>>transfer_redshift
