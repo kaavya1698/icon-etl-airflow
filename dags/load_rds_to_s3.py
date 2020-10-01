@@ -27,6 +27,7 @@ def get_postgres_data():
     cursor.execute(request) #executes request
     sources = cursor.fetchall() #fetches all the data from the executed request
     results = pd.DataFrame(sources) #writes to datafram
+    print(start_date)
     print(results)
     results.to_csv('/home/ubuntu/s3_dump/test.csv') #printing to dir owned by airflow. Need to change this to temp dir but can be done later
 
