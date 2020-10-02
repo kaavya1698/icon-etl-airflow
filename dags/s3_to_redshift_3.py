@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import os
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
-from airflow.operators import (BlockToRedshiftOperator)
+from airflow.operators import (StageToRedshiftOperator)
 from helpers import SqlQueries
 from airflow.models import Variable
 from create_table_redshift import *
