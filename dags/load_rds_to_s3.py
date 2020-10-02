@@ -39,7 +39,7 @@ def get_date(ds, **kwargs):
     Variable.set('execution_date', kwargs['execution_date'])
     return
 
-with DAG('load_rds_s3', default_args=default_args, schedule_interval = '0 8 * * *', catchup=False) as dag:
+with DAG('load_rds_s3', default_args=default_args, schedule_interval = '@once', catchup=False) as dag:
 
     start_task = DummyOperator(task_id = 'start_task')
     load_block_rds_task = PythonOperator(task_id='load_block_rds', python_callable = get_postgres_block_data)
