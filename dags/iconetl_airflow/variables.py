@@ -79,7 +79,7 @@ def read_load_dag_redshift_vars(var_prefix, **kwargs):
 
     vars = {
         'cloud_provider': cloud_provider,
-        'output_bucket': read_var('output_bucket', var_prefix, True, **kwargs),
+        'output_bucket': read_var('redshift_s3_bucket', var_prefix, True, **kwargs),
         'aws_access_key_id': read_var('aws_access_key_id', var_prefix, True, **kwargs),
         'aws_secret_access_key': read_var('aws_secret_access_key', var_prefix, True, **kwargs),
         'notification_emails': read_var('notification_emails', None, False, **kwargs),
@@ -135,15 +135,3 @@ def parse_int(val):
     return int(val)
 
 #writing vars for rds to s3------------------------------------------------------------------------------
-
-def read_load_rds_s3_vars(var_prefix, **kwargs):
-    rds_s3_start_date = read_var('export_start_date', var_prefix, True, **kwargs)
-    rds_s3_start_date = datetime.strptime(export_start_date, '%Y-%m-%d')
-
-    vars = {
-
-        'rds_s3_start_date': rds_s3_start_date,
-
-    }
-
-    return vars
