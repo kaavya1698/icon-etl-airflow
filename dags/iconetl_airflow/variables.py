@@ -79,7 +79,7 @@ def read_load_dag_redshift_vars(var_prefix, **kwargs):
 
     vars = {
         'cloud_provider': cloud_provider,
-        'output_bucket': read_var('redshift_s3_bucket', var_prefix, True, **kwargs),
+        'output_bucket': read_var('icon_redshift_s3_bucket', var_prefix, True, **kwargs),
         'aws_access_key_id': read_var('aws_access_key_id', var_prefix, True, **kwargs),
         'aws_secret_access_key': read_var('aws_secret_access_key', var_prefix, True, **kwargs),
         'notification_emails': read_var('notification_emails', None, False, **kwargs),
