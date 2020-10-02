@@ -45,7 +45,7 @@ def build_load_dag_redshift(
         default_args=default_dag_args)
 
     def add_load_tasks(task, file_format):
-        if output_bucket is None:
+        if redshift_s3_bucket is None:
             raise ValueError('You must set OUTPUT_BUCKET environment variable')
 
         load_operator = PythonOperator(
@@ -84,7 +84,7 @@ def build_load_dag_redshift(
         if file_format == 'csv':
             sql += """
                 COPY {schema}.{table}_copy_tmp
-                FROM 's3://{output_bucket}/export/{table}/block_date={date}/{table}.{file_format}'
+                FROM 's3://{redshift_s3_bucket}/export/{table}/block_date={date}/{table}.{file_format}'
                 WITH CREDENTIALS
                 'aws_access_key_id={aws_access_key_id};aws_secret_access_key={aws_secret_access_key}'
                 TRUNCATECOLUMNS BLANKSASNULL EMPTYASNULL IGNOREHEADER 1 CSV;
@@ -92,7 +92,7 @@ def build_load_dag_redshift(
         elif file_format == 'json':
             sql += """
                 COPY {schema}.{table}_copy_tmp
-                FROM 's3://{output_bucket}/export/{table}/block_date={date}/{table}.{file_format}'
+                FROM 's3://{redshift_s3_bucket}/export/{table}/block_date={date}/{table}.{file_format}'
                 WITH CREDENTIALS
                 'aws_access_key_id={aws_access_key_id};aws_secret_access_key={aws_secret_access_key}'
                 TRUNCATECOLUMNS BLANKSASNULL EMPTYASNULL JSON 'auto';
@@ -120,7 +120,7 @@ def build_load_dag_redshift(
             schema=chain,
             table=task,
             partition_key=table_partition_keys[task],
-            output_bucket=output_bucket,
+            redshift_s3_bucket=redshift_s3_bucket,
             date=ds,
             file_format=file_format,
             aws_access_key_id=aws_access_key_id,
