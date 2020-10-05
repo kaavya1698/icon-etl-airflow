@@ -22,7 +22,7 @@ default_args = {
 
 
 def get_postgres_block_data(table_name):
-    request = "SELECT * FROM %s" #double check how to write this
+    request = "SELECT * FROM %s LIMIT 10" #double check how to write this
     pg_hook = PostgresHook(postgres_conn_id="postgres", schema="postgres") #made this connection in Airflow UI
     connection = pg_hook.get_conn() #gets the connection from postgres
     cursor = connection.cursor() #cursor to postgres database
@@ -33,7 +33,7 @@ def get_postgres_block_data(table_name):
     results.to_csv('/home/ubuntu/s3_dump/blocks_dump.csv') #printing to dir owned by airflow. Need to change this to temp dir but can be done later
 
 def get_postgres_transactions_data():
-    request = "SELECT * FROM transactions" #double check how to write this
+    request = "SELECT * FROM transactions LIMIT 10" #double check how to write this
     pg_hook = PostgresHook(postgres_conn_id="postgres", schema="postgres") #made this connection in Airflow UI
     connection = pg_hook.get_conn() #gets the connection from postgres
     cursor = connection.cursor() #cursor to postgres database
@@ -59,8 +59,7 @@ with DAG('load_rds_s3', default_args=default_args, schedule_interval = '@once', 
     upload_blocks_to_s3_task = PythonOperator(task_id='upload_blocks_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/block_dump.csv','key_prefix':'blocks', 'key':'_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
     upload_transactions_to_s3_task = PythonOperator(task_id='upload_transactions_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/block_dump.csv','key_prefix':'transactions', 'key':'_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
 
-    start_task >> load_block_rds_task >> upload_blocks_to_s3_task
-    start_task >> load_transactions_rds_task >> upload_transactions_to_s3_task
+    start_task >> load_block_rds_task >> upload_blocks_to_s3_task >> load_transactions_rds_task >> upload_transactions_to_s3_task
 
 
 
