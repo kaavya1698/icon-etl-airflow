@@ -22,7 +22,7 @@ default_args = {
 
 
 def get_postgres_block_data():
-    request = "SELECT * FROM logs" #double check how to write this
+    request = "SELECT * FROM transactions" #double check how to write this
     pg_hook = PostgresHook(postgres_conn_id="postgres", schema="postgres") #made this connection in Airflow UI
     connection = pg_hook.get_conn() #gets the connection from postgres
     cursor = connection.cursor() #cursor to postgres database
@@ -30,7 +30,7 @@ def get_postgres_block_data():
     sources = cursor.fetchall() #fetches all the data from the executed request
     results = pd.DataFrame(sources) #writes to datafram
     print(results)
-    results.to_csv('/home/ubuntu/s3_dump/block_dump.csv') #printing to dir owned by airflow. Need to change this to temp dir but can be done later
+    results.to_csv('/home/ubuntu/s3_dump/transactions_dump.csv') #printing to dir owned by airflow. Need to change this to temp dir but can be done later
 
 def upload_data_to_S3(filename, key, bucket_name):
     hook = S3Hook('s3_conn')
@@ -44,7 +44,7 @@ with DAG('load_rds_s3', default_args=default_args, schedule_interval = '@once', 
 
     start_task = DummyOperator(task_id = 'start_task')
     load_block_rds_task = PythonOperator(task_id='load_block_rds', python_callable = get_postgres_block_data)
-    upload_blocks_to_s3_task = PythonOperator(task_id='upload_blocks_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/block_dump.csv', 'key':'block_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
+    upload_blocks_to_s3_task = PythonOperator(task_id='upload_blocks_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/block_dump.csv', 'key':'transactions_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
 
     start_task >> load_block_rds_task >> upload_blocks_to_s3_task
 
