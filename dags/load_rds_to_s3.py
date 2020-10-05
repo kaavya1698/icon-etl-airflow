@@ -57,8 +57,8 @@ with DAG('load_rds_s3', default_args=default_args, schedule_interval = '@once', 
     end_task = DummyOperator(task_id = 'end_task')
     load_block_rds_task = PythonOperator(task_id='load_block_rds', python_callable = get_postgres_block_data, op_kwargs={'table_name':'blocks'})
     load_transactions_rds_task = PythonOperator(task_id='load_transactions_rds', python_callable = get_postgres_transactions_data)
-    upload_blocks_to_s3_task = PythonOperator(task_id='upload_blocks_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/block_dump.csv','key_prefix':'blocks', 'key':'_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
-    upload_transactions_to_s3_task = PythonOperator(task_id='upload_transactions_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/block_dump.csv','key_prefix':'transactions', 'key':'_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
+    upload_blocks_to_s3_task = PythonOperator(task_id='upload_blocks_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/blocks_dump.csv','key_prefix':'blocks', 'key':'_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
+    upload_transactions_to_s3_task = PythonOperator(task_id='upload_transactions_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/transactions_dump.csv','key_prefix':'transactions', 'key':'_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
 
     start_task >> load_block_rds_task >> upload_blocks_to_s3_task >> end_task
     start_task >> load_transactions_rds_task >> upload_transactions_to_s3_task >> end_task
