@@ -33,15 +33,15 @@ def get_postgres_block_data(table_name):
     results.to_csv('/home/ubuntu/s3_dump/blocks_dump.csv') #printing to dir owned by airflow. Need to change this to temp dir but can be done later
 
 def get_postgres_transactions_data():
-    request = "SELECT * FROM transactions LIMIT 10" #double check how to write this
+    trans_request = "SELECT * FROM transactions LIMIT 10" #double check how to write this
     pg_hook = PostgresHook(postgres_conn_id="postgres", schema="postgres") #made this connection in Airflow UI
     connection = pg_hook.get_conn() #gets the connection from postgres
-    cursor = connection.cursor() #cursor to postgres database
-    cursor.execute(request) #executes request
-    sources = cursor.fetchall() #fetches all the data from the executed request
-    results = pd.DataFrame(sources) #writes to datafram
-    print(results)
-    results.to_csv('/home/ubuntu/s3_dump/transactions_dump.csv') #printing to dir owned by airflow. Need to change this to temp dir but can be done later
+    trans_cursor = connection.cursor() #cursor to postgres database
+    trans_cursor.execute(trans_request) #executes request
+    trans_sources = trans_cursor.fetchall() #fetches all the data from the executed request
+    trans_results = pd.DataFrame(trans_sources) #writes to datafram
+    print(trans_results)
+    trans_results.to_csv('/home/ubuntu/s3_dump/transactions_dump.csv') #printing to dir owned by airflow. Need to change this to temp dir but can be done later
 
 def upload_data_to_S3(filename, key_prefix, key, bucket_name):
     hook = S3Hook('s3_conn')
@@ -54,12 +54,14 @@ def get_date(ds, **kwargs):
 with DAG('load_rds_s3', default_args=default_args, schedule_interval = '@once', catchup=False) as dag:
 
     start_task = DummyOperator(task_id = 'start_task')
+    end_task = DummyOperator(task_id = 'end_task')
     load_block_rds_task = PythonOperator(task_id='load_block_rds', python_callable = get_postgres_block_data, op_kwargs={'table_name':'blocks'})
     load_transactions_rds_task = PythonOperator(task_id='load_transactions_rds', python_callable = get_postgres_transactions_data)
     upload_blocks_to_s3_task = PythonOperator(task_id='upload_blocks_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/block_dump.csv','key_prefix':'blocks', 'key':'_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
     upload_transactions_to_s3_task = PythonOperator(task_id='upload_transactions_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/block_dump.csv','key_prefix':'transactions', 'key':'_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
 
-    start_task >> load_block_rds_task >> upload_blocks_to_s3_task >> load_transactions_rds_task >> upload_transactions_to_s3_task
+    start_task >> load_block_rds_task >> upload_blocks_to_s3_task >> end_task
+    start_task >> load_transactions_rds_task >> upload_transactions_to_s3_task >> end_task
 
 
 
