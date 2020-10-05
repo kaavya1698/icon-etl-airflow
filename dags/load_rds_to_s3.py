@@ -20,6 +20,8 @@ default_args = {
     'retry_delay' : timedelta(minutes=5)
 }
 
+blocks = blocks
+
 def get_postgres_block_data():
     request = "SELECT * FROM %s" #double check how to write this
     pg_hook = PostgresHook(postgres_conn_id="postgres", schema="postgres") #made this connection in Airflow UI
