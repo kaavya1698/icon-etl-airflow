@@ -21,11 +21,11 @@ default_args = {
 }
 
 def get_postgres_block_data():
-    request = "SELECT * FROM blocks" #double check how to write this
+    request = "SELECT * FROM %s" #double check how to write this
     pg_hook = PostgresHook(postgres_conn_id="postgres", schema="postgres") #made this connection in Airflow UI
     connection = pg_hook.get_conn() #gets the connection from postgres
     cursor = connection.cursor() #cursor to postgres database
-    cursor.execute(request) #executes request
+    cursor.execute(request, (blocks)) #executes request
     sources = cursor.fetchall() #fetches all the data from the executed request
     results = pd.DataFrame(sources) #writes to datafram
     print(results)
