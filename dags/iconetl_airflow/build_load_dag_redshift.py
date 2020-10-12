@@ -18,8 +18,14 @@ def build_load_dag_redshift(
         dag_id,
         cloud_provider,
         redshift_s3_bucket,
-        aws_access_key_id,
-        aws_secret_access_key,
+
+
+
+
+
+
+
+
         chain='icon',
         notification_emails=None,
         start_date=datetime(2018, 1, 24),
