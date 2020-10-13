@@ -84,7 +84,7 @@ def build_load_dag_redshift(
         if file_format == 'csv':
             sql += """
                 COPY {schema}.{table}_copy_tmp
-                FROM 's3://{redshift_s3_bucket}/export/{table}/block_date={date}/{table}.{file_format}'
+                FROM 's3://{redshift_s3_bucket}/{table}.{file_format}'
                 WITH CREDENTIALS
                 'aws_access_key_id={aws_access_key_id};aws_secret_access_key={aws_secret_access_key}'
                 TRUNCATECOLUMNS BLANKSASNULL EMPTYASNULL IGNOREHEADER 1 CSV;
