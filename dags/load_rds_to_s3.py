@@ -85,16 +85,16 @@ with DAG('load_rds_s3', default_args=default_args, schedule_interval = '@once', 
     upload_transactions_to_s3_task = PythonOperator(task_id='upload_transactions_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/transactions_dump.csv','key_prefix':'transactions', 'key':'_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
 
     #receipts
-    load_receipts_rds_task = PythonOperator(task_id='load_receipts_rds', python_callable = get_postgres_receipts_data)
-    upload_receipts_to_s3_task = PythonOperator(task_id='upload_receipts_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/receipts_dump.csv','key_prefix':'receipts', 'key':'_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
+    #load_receipts_rds_task = PythonOperator(task_id='load_receipts_rds', python_callable = get_postgres_receipts_data)
+    #upload_receipts_to_s3_task = PythonOperator(task_id='upload_receipts_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/receipts_dump.csv','key_prefix':'receipts', 'key':'_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
 
     #logs
-    load_logs_rds_task = PythonOperator(task_id='load_logs_rds', python_callable = get_postgres_logs_data)
-    upload_logs_to_s3_task = PythonOperator(task_id='upload_logs_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/logs_dump.csv','key_prefix':'logs', 'key':'_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
+    #load_logs_rds_task = PythonOperator(task_id='load_logs_rds', python_callable = get_postgres_logs_data)
+    #upload_logs_to_s3_task = PythonOperator(task_id='upload_logs_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/logs_dump.csv','key_prefix':'logs', 'key':'_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
 
 
-    start_task >> load_block_rds_task >> upload_blocks_to_s3_task >> pause_task >> load_receipts_rds_task >> upload_receipts_to_s3_task >> end_task
-    start_task >> load_transactions_rds_task >> upload_transactions_to_s3_task >> pause_task >> load_logs_rds_task >> upload_logs_to_s3_task >> end_task
+    start_task >> load_block_rds_task >> upload_blocks_to_s3_task >> end_task
+    start_task >> load_transactions_rds_task >> upload_transactions_to_s3_task >> end_task
 
 
 
