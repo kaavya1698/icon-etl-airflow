@@ -73,6 +73,7 @@ def upload_data_to_S3(filename, key_prefix, key, bucket_name):
 with DAG('load_rds_s3', default_args=default_args, schedule_interval = '@once', catchup=False) as dag:
 
     start_task = DummyOperator(task_id = 'start_task')
+    pause_task = DummyOperator(task_id = 'pause_task')
     end_task = DummyOperator(task_id = 'end_task')
 
     #blocks
@@ -92,10 +93,8 @@ with DAG('load_rds_s3', default_args=default_args, schedule_interval = '@once', 
     upload_logs_to_s3_task = PythonOperator(task_id='upload_logs_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/logs_dump.csv','key_prefix':'logs', 'key':'_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
 
 
-    start_task >> load_block_rds_task >> upload_blocks_to_s3_task >> end_task
-    start_task >> load_transactions_rds_task >> upload_transactions_to_s3_task >> end_task
-    start_task >> load_receipts_rds_task >> upload_receipts_to_s3_task >> end_task
-    start_task >> load_logs_rds_task >> upload_logs_to_s3_task >> end_task
+    start_task >> load_block_rds_task >> upload_blocks_to_s3_task >> pause_task >> load_receipts_rds_task >> upload_receipts_to_s3_task >> end_task
+    start_task >> load_transactions_rds_task >> upload_transactions_to_s3_task >> pause_task >> load_logs_rds_task >> upload_logs_to_s3_task >> end_task
 
 
 
