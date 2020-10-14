@@ -35,7 +35,7 @@ elif database == 'redshift':
         chain='icon',
         **read_load_dag_redshift_vars(
             var_prefix='icon_',
-            schedule_interval='30 1 * * *',
+            schedule_interval='@once',
             import_start_date='2018-01-24',
         )
     )
