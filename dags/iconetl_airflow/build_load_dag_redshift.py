@@ -74,23 +74,17 @@ def build_load_dag_redshift(
             'transactions': 'block_number'
         }
 
-        sql = """
-            DROP TABLE IF EXISTS {schema}.{table}_copy_tmp;
-
-            CREATE TABLE {schema}.{table}_copy_tmp
-            (LIKE {schema}.{table});
-        """
 
         if file_format == 'csv':
-            sql += """
-                COPY {schema}.{table}_copy_tmp
+            sql = """
+                COPY {schema}.{table}
                 FROM 's3://{redshift_s3_bucket}/{table}.{file_format}'
                 WITH CREDENTIALS
                 'aws_access_key_id={aws_access_key_id};aws_secret_access_key={aws_secret_access_key}'
                 TRUNCATECOLUMNS BLANKSASNULL EMPTYASNULL IGNOREHEADER 1 CSV;
             """
         elif file_format == 'json':
-            sql += """
+            sql = """
                 COPY {schema}.{table}_copy_tmp
                 FROM 's3://{redshift_s3_bucket}/export/{table}/block_date={date}/{table}.{file_format}'
                 WITH CREDENTIALS
@@ -100,21 +94,7 @@ def build_load_dag_redshift(
         else:
             raise ValueError('Only json and csv file formats are supported.')
 
-        sql += """
-            BEGIN TRANSACTION;
 
-            DELETE FROM {schema}.{table}
-            USING {schema}.{table}_copy_tmp
-            WHERE
-              {schema}.{table}.{partition_key} = {schema}.{table}_copy_tmp.{partition_key};
-
-            INSERT INTO {schema}.{table}
-            SELECT * FROM {schema}.{table}_copy_tmp;
-
-            END TRANSACTION;
-
-            DROP TABLE {schema}.{table}_copy_tmp;
-        """
 
         formatted_sql = sql.format(
             schema=chain,
