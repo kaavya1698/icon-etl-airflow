@@ -78,15 +78,15 @@ with DAG('load_rds_s3', default_args=default_args, schedule_interval = '@once', 
 
     #blocks
     load_block_rds_task = PythonOperator(task_id='load_block_rds', python_callable = get_postgres_block_data)
-    upload_blocks_to_s3_task = PythonOperator(task_id='upload_blocks_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/blocks_dump.csv', 'key':'blocks', 'bucket_name': 'icon-redshift-dump-dev'})
+    upload_blocks_to_s3_task = PythonOperator(task_id='upload_blocks_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/blocks_dump.csv', 'key':'blocks.csv', 'bucket_name': 'icon-redshift-dump-dev'})
 
     #transactions
     load_transactions_rds_task = PythonOperator(task_id='load_transactions_rds', python_callable = get_postgres_transactions_data)
-    upload_transactions_to_s3_task = PythonOperator(task_id='upload_transactions_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/transactions_dump.csv', 'key':'transactions', 'bucket_name': 'icon-redshift-dump-dev'})
+    upload_transactions_to_s3_task = PythonOperator(task_id='upload_transactions_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/transactions_dump.csv', 'key':'transactions.csv', 'bucket_name': 'icon-redshift-dump-dev'})
 
     #receipts
     load_receipts_rds_task = PythonOperator(task_id='load_receipts_rds', python_callable = get_postgres_receipts_data)
-    upload_receipts_to_s3_task = PythonOperator(task_id='upload_receipts_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/receipts_dump.csv', 'key':'receipts', 'bucket_name': 'icon-redshift-dump-dev'})
+    upload_receipts_to_s3_task = PythonOperator(task_id='upload_receipts_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/receipts_dump.csv', 'key':'receipts.csv', 'bucket_name': 'icon-redshift-dump-dev'})
 
     #logs
     #load_logs_rds_task = PythonOperator(task_id='load_logs_rds', python_callable = get_postgres_logs_data)
