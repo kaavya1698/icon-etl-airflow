@@ -78,7 +78,8 @@ def build_load_dag_redshift(
             DROP TABLE IF EXISTS {schema}.{table}_copy_tmp;
 
             CREATE TABLE {schema}.{table}_copy_tmp
-            (LIKE {schema}.{table});
+            (LIKE {schema}.{table})
+            DISTSTYLE EVEN;
         """
 
         if file_format == 'csv':
