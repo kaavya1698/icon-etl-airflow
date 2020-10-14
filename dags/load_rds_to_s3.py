@@ -65,9 +65,9 @@ def get_postgres_logs_data():
     print(logs_results)
     logs_results.to_csv('/home/ubuntu/s3_dump/logs_dump.csv') #printing to dir owned by airflow. Need to change this to temp dir but can be done later
 
-def upload_data_to_S3(filename, key_prefix, key, bucket_name):
+def upload_data_to_S3(filename, key, bucket_name):
     hook = S3Hook('s3_conn')
-    hook.load_file(filename=filename, key=key_prefix + key, bucket_name=bucket_name)
+    hook.load_file(filename=filename, key=key, bucket_name=bucket_name)
 
 
 with DAG('load_rds_s3', default_args=default_args, schedule_interval = '@once', catchup=False) as dag:
@@ -78,15 +78,15 @@ with DAG('load_rds_s3', default_args=default_args, schedule_interval = '@once', 
 
     #blocks
     load_block_rds_task = PythonOperator(task_id='load_block_rds', python_callable = get_postgres_block_data)
-    upload_blocks_to_s3_task = PythonOperator(task_id='upload_blocks_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/blocks_dump.csv','key_prefix':'blocks', 'key':'.csv', 'bucket_name': 'icon-redshift-dump-dev'})
+    upload_blocks_to_s3_task = PythonOperator(task_id='upload_blocks_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/blocks_dump.csv', 'key':'blocks', 'bucket_name': 'icon-redshift-dump-dev'})
 
     #transactions
     load_transactions_rds_task = PythonOperator(task_id='load_transactions_rds', python_callable = get_postgres_transactions_data)
-    upload_transactions_to_s3_task = PythonOperator(task_id='upload_transactions_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/transactions_dump.csv','key_prefix':'transactions', 'key':'.csv', 'bucket_name': 'icon-redshift-dump-dev'})
+    upload_transactions_to_s3_task = PythonOperator(task_id='upload_transactions_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/transactions_dump.csv', 'key':'transactions', 'bucket_name': 'icon-redshift-dump-dev'})
 
     #receipts
     load_receipts_rds_task = PythonOperator(task_id='load_receipts_rds', python_callable = get_postgres_receipts_data)
-    upload_receipts_to_s3_task = PythonOperator(task_id='upload_receipts_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/receipts_dump.csv','key_prefix':'receipts', 'key':'_rds_dump', 'bucket_name': 'icon-redshift-dump-dev'})
+    upload_receipts_to_s3_task = PythonOperator(task_id='upload_receipts_to_S3', python_callable = upload_data_to_S3, op_kwargs={'filename': '/home/ubuntu/s3_dump/receipts_dump.csv', 'key':'receipts', 'bucket_name': 'icon-redshift-dump-dev'})
 
     #logs
     #load_logs_rds_task = PythonOperator(task_id='load_logs_rds', python_callable = get_postgres_logs_data)
