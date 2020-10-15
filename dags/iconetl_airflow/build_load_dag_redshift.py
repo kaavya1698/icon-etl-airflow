@@ -107,8 +107,8 @@ def build_load_dag_redshift(
         pg_hook.run(formatted_sql)
 
     load_blocks_task = add_load_tasks('blocks', 'csv')
-    load_transactions_task = add_load_tasks('transactions', 'csv')
+    #load_transactions_task = add_load_tasks('transactions', 'csv')
     load_receipts_task = add_load_tasks('receipts', 'csv')
-    load_logs_task = add_load_tasks('logs', 'json')
+    #load_logs_task = add_load_tasks('logs', 'json')
 
     return dag
