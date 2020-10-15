@@ -40,6 +40,7 @@ def get_postgres_transactions_data():
     trans_cursor.execute(trans_request) #executes request
     trans_sources = trans_cursor.fetchall() #fetches all the data from the executed request
     trans_results = pd.DataFrame(trans_sources) #writes to datafram
+    trans_results = trans_results["nid"].astype(int)
     print(trans_results)
     trans_results.to_csv('/home/ubuntu/s3_dump/transactions_dump.csv', index=False) #printing to dir owned by airflow. Need to change this to temp dir but can be done later
 
