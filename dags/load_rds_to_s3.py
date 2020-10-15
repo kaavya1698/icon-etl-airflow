@@ -30,7 +30,7 @@ def get_postgres_block_data():
     sources = cursor.fetchall() #fetches all the data from the executed request
     results = pd.DataFrame(sources) #writes to datafram
     print(results)
-    results.to_csv('/home/ubuntu/s3_dump/blocks_dump.csv') #printing to dir owned by airflow. Need to change this to temp dir but can be done later
+    results.to_csv('/home/ubuntu/s3_dump/blocks_dump.csv', index=False) #printing to dir owned by airflow. Need to change this to temp dir but can be done later
 
 def get_postgres_transactions_data():
     trans_request = "SELECT * FROM transactions" #double check how to write this
@@ -41,7 +41,7 @@ def get_postgres_transactions_data():
     trans_sources = trans_cursor.fetchall() #fetches all the data from the executed request
     trans_results = pd.DataFrame(trans_sources) #writes to datafram
     print(trans_results)
-    trans_results.to_csv('/home/ubuntu/s3_dump/transactions_dump.csv') #printing to dir owned by airflow. Need to change this to temp dir but can be done later
+    trans_results.to_csv('/home/ubuntu/s3_dump/transactions_dump.csv', index=False) #printing to dir owned by airflow. Need to change this to temp dir but can be done later
 
 def get_postgres_receipts_data():
     receipts_request = "SELECT * FROM receipts" #double check how to write this
@@ -52,7 +52,7 @@ def get_postgres_receipts_data():
     receipts_sources = receipts_cursor.fetchall() #fetches all the data from the executed request
     receipts_results = pd.DataFrame(receipts_sources) #writes to datafram
     print(receipts_results)
-    receipts_results.to_csv('/home/ubuntu/s3_dump/receipts_dump.csv') #printing to dir owned by airflow. Need to change this to temp dir but can be done later
+    receipts_results.to_csv('/home/ubuntu/s3_dump/receipts_dump.csv', index=False) #printing to dir owned by airflow. Need to change this to temp dir but can be done later
 
 def get_postgres_logs_data():
     logs_request = "SELECT * FROM logs" #double check how to write this
@@ -63,7 +63,7 @@ def get_postgres_logs_data():
     logs_sources = logs_cursor.fetchall() #fetches all the data from the executed request
     logs_results = pd.DataFrame(logs_sources) #writes to datafram
     print(logs_results)
-    logs_results.to_csv('/home/ubuntu/s3_dump/logs_dump.csv') #printing to dir owned by airflow. Need to change this to temp dir but can be done later
+    logs_results.to_csv('/home/ubuntu/s3_dump/logs_dump.csv', index=False) #printing to dir owned by airflow. Need to change this to temp dir but can be done later
 
 def upload_data_to_S3(filename, key, bucket_name):
     hook = S3Hook('s3_conn')
