@@ -81,7 +81,7 @@ def build_load_dag_redshift(
                 FROM 's3://{redshift_s3_bucket}/{table}.{file_format}'
                 WITH CREDENTIALS
                 'aws_access_key_id={aws_access_key_id};aws_secret_access_key={aws_secret_access_key}'
-                BLANKSASNULL EMPTYASNULL fillrecord delimiter IGNOREHEADER 1 CSV;
+                BLANKSASNULL EMPTYASNULL FILLRECORD IGNOREHEADER 1 CSV;
             """
         elif file_format == 'json':
             sql = """
