@@ -73,11 +73,6 @@ def build_load_dag_redshift(
             'receipts': 'block_number',
             'transactions': 'block_number'
         }
-        sql = """
-            DROP TABLE IF EXISTS {schema}.{table}_copy_tmp;
-            CREATE TABLE {schema}.{table}_copy_tmp
-            (LIKE {schema}.{table});
-        """
 
         if file_format == 'csv':
             sql = """
@@ -98,17 +93,6 @@ def build_load_dag_redshift(
         else:
             raise ValueError('Only json and csv file formats are supported.')
 
-        sql += """
-            BEGIN TRANSACTION;
-            DELETE FROM {schema}.{table}
-            USING {schema}.{table}_copy_tmp
-            WHERE
-              {schema}.{table}.{partition_key} = {schema}.{table}_copy_tmp.{partition_key};
-            INSERT INTO {schema}.{table}
-            SELECT * FROM {schema}.{table}_copy_tmp;
-            END TRANSACTION;
-            DROP TABLE {schema}.{table}_copy_tmp;
-        """
 
         formatted_sql = sql.format(
             schema=chain,
